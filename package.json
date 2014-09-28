@@ -14,6 +14,7 @@
     "docpad-plugin-cleanurls": "2.x",
     "docpad-plugin-coffeescript": "2.x",
     "docpad-plugin-eco": "2.x",
+    "docpad-plugin-geturl": "^2.1.1",
     "docpad-plugin-ghpages": "^2.4.3",
     "docpad-plugin-jade": "2.x",
     "docpad-plugin-less": "2.x",
@@ -26,6 +27,10 @@
     "docpad-plugin-text": "2.x",
     "loophole": "^1.0.0",
     "marked": "*"
+  },
+  "devDependencies": {
+    "docpad-plugin-livereload": "2.x",
+    "bower": "~1"
   },
   "scripts": {
     "postinstall": "node node_modules/bower/bin/bower install"

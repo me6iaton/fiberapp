@@ -12,7 +12,7 @@ module.exports =
 		srcPath: '/var/www/atom/docapp/src/'
 		outPath: '/var/www/atom/docapp/out/'
 	activate: (state) ->
-		atom.workspaceView.command "docpad:generate", => @generate()
+		atom.workspaceView.command "docpad:generate", => @deployGhpages()
 
 	generate: ->
 		@createInstance (docpadInstance) ->
@@ -20,7 +20,15 @@ module.exports =
 				return console.log(err.stack)  if err
 				console.log "OK"
 
-	createInstance: (action) ->
+	deployGhpages: ->
+		process.env['NODE_ENV'] = 'static'
+		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
+			return console.log(err.stack)  if err
+			docpadInstance.getPlugin('ghpages').deployToGithubPages ->
+				return
+
+	createInstance: (action, env) ->
+		process.env['NODE_ENV'] = env if env
 		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
 			return console.log(err.stack)  if err
 			action docpadInstance;
