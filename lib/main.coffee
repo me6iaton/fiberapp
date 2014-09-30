@@ -1,7 +1,10 @@
 #!/usr/bin/env node
+{$} = require 'atom'
 {spawn} = require "child_process"
 {allowUnsafeEval} = require 'loophole'
 Docpad = allowUnsafeEval -> require 'docpad'
+
+
 #{BufferedNodeProcess} = require 'atom'
 module.exports =
 	configDefaults:
@@ -11,8 +14,9 @@ module.exports =
 		configPaths : ['/var/www/atom/docapp/docpad.coffee']
 		srcPath: '/var/www/atom/docapp/src/'
 		outPath: '/var/www/atom/docapp/out/'
+
 	activate: (state) ->
-		atom.workspaceView.command "docpad:generate", => @deployGhpages()
+		atom.workspaceView.command "docpad:deploy-ghpages", => @deployGhpages()
 
 	generate: ->
 		@createInstance (docpadInstance) ->
@@ -21,14 +25,35 @@ module.exports =
 				console.log "OK"
 
 	deployGhpages: ->
-		process.env['NODE_ENV'] = 'static'
+#		process.env['NODE_ENV'] = 'production'
+#		process.env['NODE_ENV'] = 'static'
+		console.log(process.env['NODE_ENV'])
+#		debugger
+#		console.log($('.icon-deploy-ghpages'))
+		$('.icon-deploy-ghpages').removeClass('icon-mark-github').addClass('loading loading-spinner-tiny').parent().attr("disabled", "disabled")
 		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
 			return console.log(err.stack)  if err
+			docpadInstance.on 'log', ->
+				console.log('log')
+			docpadInstance.on 'notify', (opt) ->
+				console.log(opt.options.title)
+#			debugger
+			docpadInstance.getPlugin('ghpages').deployToGithubPages ->
+				console.log("ghpages sucses")
+				$('.icon-deploy-ghpages').removeClass('loading loading-spinner-tiny').addClass('icon-mark-github').parent().removeAttr("disabled")
+				return
+
+	deployGhpages2: ->
+		@createInstance (docpadInstance) ->
 			docpadInstance.getPlugin('ghpages').deployToGithubPages ->
 				return
+			, 'static'
 
 	createInstance: (action, env) ->
 		process.env['NODE_ENV'] = env if env
+		process.stdout.on "data", (data) ->
+			console.log "stdout: " + data
+			return
 		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
 			return console.log(err.stack)  if err
 			action docpadInstance;
