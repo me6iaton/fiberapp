@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-{$} = require 'atom'
+{$, BufferedProcess} = require 'atom'
+StatusView = require './views/status-view'
 {spawn} = require "child_process"
-{allowUnsafeEval} = require 'loophole'
-Docpad = allowUnsafeEval -> require 'docpad'
+#{allowUnsafeEval} = require 'loophole'
+#Docpad = allowUnsafeEval -> require 'docpad'
+Docpad = require 'docpad'
+childProcess = require 'child_process'
 
-
-#{BufferedNodeProcess} = require 'atom'
 module.exports =
 	configDefaults:
 		rootPath: '/var/www/atom/docpad/'
@@ -17,7 +18,7 @@ module.exports =
 
 	activate: (state) ->
 		atom.workspaceView.command "docpad:deploy-ghpages", => @deployGhpages()
-
+		@gitCheckAvailability()
 	generate: ->
 		@createInstance (docpadInstance) ->
 			docpadInstance.action "generate", (err, result) ->
@@ -28,13 +29,9 @@ module.exports =
 #		process.env['NODE_ENV'] = 'production'
 #		process.env['NODE_ENV'] = 'static'
 		console.log(process.env['NODE_ENV'])
-#		debugger
-#		console.log($('.icon-deploy-ghpages'))
 		$('.icon-deploy-ghpages').removeClass('icon-mark-github').addClass('loading loading-spinner-tiny').parent().attr("disabled", "disabled")
 		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
 			return console.log(err.stack)  if err
-			docpadInstance.on 'log', ->
-				console.log('log')
 			docpadInstance.on 'notify', (opt) ->
 				console.log(opt.options.title)
 #			debugger
@@ -57,6 +54,18 @@ module.exports =
 		Docpad.createInstance @configDefaults, (err, docpadInstance) ->
 			return console.log(err.stack)  if err
 			action docpadInstance;
+
+	gitCheckAvailability: ->
+		childProcess.exec("git --version", (error, stdout, stderr) ->
+			if error
+#				debugger
+				console.log error.stack
+				console.log "Error code: " + error.code
+				console.log "Signal received: " + error.signal
+				console.log "Child Process STDERR: " + stderr
+				new StatusView type: 'alert', message: stderr.toString()
+		)
+
 
 	generateChildProcess: ->
 			options =
@@ -84,6 +93,41 @@ module.exports =
 		endTime = startTime + milliSeconds
 		while new Date().getTime() < endTime
 			startTime++
+
+	# Public: Execute a git command.
+	#
+	# options - An {Object} with the following keys:
+	#   :args    - The {Array} containing the arguments to pass.
+	#   :options - The {Object} with options to pass.
+	#     :cwd  - Current working directory as {String}.
+	#   :stdout  - The {Function} to pass the stdout to.
+	#   :exit    - The {Function} to pass the exit code to.
+	#
+	# Returns nothing.
+	gitCmd: ({args, options, stdout, stderr, exit}={}) ->
+		command = _getGitPath()
+		command = _getGitPath()
+		options ?= {}
+		options.cwd ?= dir()
+		stderr ?= (data) -> new StatusView(type: 'alert', message: data.toString())
+
+		if stdout? and not exit?
+			c_stdout = stdout
+			stdout = (data) ->
+				@save ?= ''
+				@save += data
+			exit = (exit) ->
+				c_stdout @save ?= ''
+				@save = null
+
+		new BufferedProcess
+			command: command
+			args: args
+			options: options
+			stdout: stdout
+			stderr: stderr
+			exit: exit
+
 	deactivate: ->
 
 	serialize: ->
