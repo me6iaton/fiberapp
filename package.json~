@@ -34,6 +34,6 @@
     "bower": "~1"
   },
   "scripts": {
-    "postinstall": "cd ./node_modules/docpad; cake compile; cd ./node_modules/cson; cake compile"
+    "postinstall": "cd ./node_modules/docpad; cake compile"
   }
 }
