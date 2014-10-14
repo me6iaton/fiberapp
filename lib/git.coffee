@@ -1,3 +1,4 @@
+StatusView = require './views/status-view'
 childProcess = require 'child_process'
 
 git =
