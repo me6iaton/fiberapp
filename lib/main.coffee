@@ -19,6 +19,7 @@ module.exports =
 		if(atom.config.get('docapp.environment') ? 'dev')
 			atom.project.setPaths([atom.config.get('docapp.rootPath')])
 		else
+#			atom.project.setPaths([atom.config.get('docapp.rootPath')])
 			console.log(atom.config.get('docapp.environment'))
 
 	getGenerator: ->
