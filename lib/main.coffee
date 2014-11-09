@@ -1,14 +1,17 @@
-{$, BufferedProcess} = require 'atom'
+{$, BufferedProcess, Workspace} = require 'atom'
 {spawn} = require "child_process"
 {allowUnsafeEval} = require 'loophole'
+
+StatusView = require './views/status-view'
 path = require('path')
 git = require './git'
+GeneratorFactory = require('./generators/generator')
 
 module.exports =
   config:
     rootPath:
       type: 'string'
-      default: path.resolve(atom.config.resourcePath, '../../project/')
+      default: path.resolve(atom.config.resourcePath, '../../../project')
     gitPath:
       type: 'string'
       default: 'git'
@@ -22,20 +25,37 @@ module.exports =
     environment:
       type: 'string'
       default: 'dev'
+    generator:
+      type: 'string'
+      default: 'docpad'
+
 
   activate: (state) ->
     @switchView()
-    @Generator = @getGenerator()
     git.checkAvailability()
+    @Generator = GeneratorFactory atom.config.get('docapp.generator')
+    atom.workspaceView.command "docapp:deploy-ghpages", => @Generator.deployGhpages()
+
+#    atom.confirm
+#      message: 'How you feeling?'
+#      detailedMessage: 'Be honest.'
+#      buttons:
+#        Good: -> window.alert('good to hear')
+#        Bad: -> window.alert('bummer')
+#    atom.workspace.addModalPanel  item: $("<p>test</p>")
+#    new StatusView type: 'alert', message: "true"
+
   switchView: ->
     if(atom.config.get('docapp.environment') ? 'dev')
-      atom.project.setPaths([atom.config.get('docapp.rootPath')])
+      pathsLength = atom.project.getPaths().length
+      if pathsLength == 0
+        atom.project.setPaths([atom.config.get('docapp.rootPath')])
+        pathsLength = 1
     else
-#			atom.project.setPaths([atom.config.get('docapp.rootPath')])
       console.log(atom.config.get('docapp.environment'))
 
-  getGenerator: ->
-    require('./generators/docpad')
+#  getGenerator: ->
+#    require('./generators/docpad')
 
   generateChildProcess: ->
       options =

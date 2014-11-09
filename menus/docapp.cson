@@ -1,7 +1,7 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
   '.overlayer':
-      'Docpad deploy github pages': 'docpad:deploy-ghpages'
+      'Docapp deploy github pages': 'docapp:deploy-ghpages'
 
 'menu': [
   {
@@ -9,7 +9,7 @@
     'submenu': [
       'label': 'docpad'
       'submenu': [
-        { 'label': 'Docpad deploy github pages', 'command': 'docpad:deploy-ghpages' }
+        { 'label': 'Docapp deploy github pages', 'command': 'docapp:deploy-ghpages' }
       ]
     ]
   }
