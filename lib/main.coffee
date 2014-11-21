@@ -8,6 +8,13 @@ git = require './git'
 GeneratorFactory = require('./generators/generator')
 HtmlTab = require('./html-tab')
 
+# add atom.nprogress
+atom.nprogress = require 'nprogress'
+atom.nprogress.configure({
+  parent : '.tab-bar'
+  ,showSpinner: false
+})
+
 module.exports =
   config:
     rootPath:
