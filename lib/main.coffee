@@ -6,6 +6,7 @@ StatusView = require './views/status-view'
 path = require('path')
 git = require './git'
 GeneratorFactory = require('./generators/generator')
+HtmlTab = require('./html-tab')
 
 module.exports =
   config:
@@ -29,21 +30,32 @@ module.exports =
       type: 'string'
       default: 'docpad'
 
-
   activate: (state) ->
     @switchView()
     git.checkAvailability()
-    @Generator = GeneratorFactory atom.config.get('docapp.generator')
-    atom.workspaceView.command "docapp:deploy-ghpages", => @Generator.deployGhpages()
+    @GeneratorDecor = GeneratorFactory atom.config.get('docapp.generator')
 
-#    atom.confirm
+#    @GeneratorDecor.deployGhpagesTest()
+
+    atom.workspaceView.command "docapp:deploy-ghpages", => @GeneratorDecor.deployGhpages()
+    atom.workspaceView.command "docapp:preview", =>
+      filePath = atom.workspaceView.getActiveView()?.editor?.buffer.file?.path
+      if filePath
+        @GeneratorDecor.run ()->
+          atom.workspace.activePane.activateItem new HtmlTab "preview", filePath
+
+    atom.on 'merge-conflicts:done', (event) =>
+      git.gitCmd args: ['rebase', '--continue']
+      .then () =>
+        @GeneratorDecor.deployGhpages()
+
+      #    atom.confirm
 #      message: 'How you feeling?'
 #      detailedMessage: 'Be honest.'
 #      buttons:
 #        Good: -> window.alert('good to hear')
 #        Bad: -> window.alert('bummer')
-#    atom.workspace.addModalPanel  item: $("<p>test</p>")
-#    new StatusView type: 'alert', message: "true"
+#    StatusView = new StatusView type: 'alert', message: "true"
 
   switchView: ->
     if(atom.config.get('docapp.environment') ? 'dev')

@@ -7,7 +7,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'docpad'
+      'label': 'Docapp'
       'submenu': [
         { 'label': 'Docapp deploy github pages', 'command': 'docapp:deploy-ghpages' }
       ]

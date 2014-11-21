@@ -1,24 +1,57 @@
 StatusView = require './views/status-view'
 childProcess = require 'child_process'
 {BufferedProcess} = require 'atom'
-
+mergeConflictsPath = atom.packages.resolvePackagePath('merge-conflicts')
+MergeState = require mergeConflictsPath + '/lib/merge-state'
 
 _getGitPath = ->
 	atom.config.get('docapp.gitPath') ? 'git'
 
+sleep = (milliSeconds) ->
+	startTime = new Date().getTime()
+	endTime = startTime + milliSeconds
+	while new Date().getTime() < endTime
+		startTime++
 
+mergeConflictsDetect = ->
+	new Promise (resolve, reject) ->
+		MergeState.read (err, state) ->
+			reject(err) if err
+			if not state.isEmpty()
+				atom.workspaceView.trigger 'merge-conflicts:detect'
+				reject()
+			else
+				resolve()
 git =
+	sync: (callback) ->
+		mergeConflictsDetect()
+		.then () =>
+			@gitCmd args: ['add', '.']
+		.then () =>
+			@gitCmd args: ['status', '-s']
+		.then (resolve) =>
+			@gitCmd args: ['commit', '-m', resolve]
+		.then () =>
+			@gitCmd
+				args: ['pull', '--rebase', 'origin', 'master']
+				stderr: (err) -> console.log(err)
+		.then () =>
+			mergeConflictsDetect()
+		.then () =>
+			@gitCmd
+				args: ['push', 'origin', 'master']
+				stderr: (err) -> console.log(err)
+			callback(null, true)
+		,()->
+			callback(null, false)
+
 	checkDeployUrl: ->
 		unless atom.config.get('docapp.gitSetDeployUrl')
 			@gitCmd args: ['remote', 'remove', 'deploy']
 			@gitCmd
 				args: ['remote', 'add', 'deploy', atom.config.get('docapp.gitDeployUrl')]
-				stdout : (data) ->
-					console.log(data)
-				stderr: (err) ->
-					console.error(err)
-				exit: () ->
-					atom.config.set 'docapp.gitSetDeployUrl', true
+				exit: () -> atom.config.set 'docapp.gitSetDeployUrl', true
+				#	todo-me  remove exit
 
 	checkAvailability: ->
 		childProcess.exec "git --version", (error, stdout, stderr) ->
@@ -39,28 +72,38 @@ git =
 #   :exit    - The {Function} to pass the exit code to.
 #
 # Returns nothing.
-	gitCmd: ({args, options, stdout, stderr, exit}={}) ->
-		command = _getGitPath()
-		options ?= {}
-		options.cwd ?= atom.config.get('docapp.rootPath')
-		stderr ?= (data) -> new StatusView(type: 'alert', message: data.toString())
+	gitCmd: ({args, options, stdout, stderr}={}) ->
+		new Promise (resolve, reject) ->
+			command = _getGitPath()
+			options ?= {}
+			options.cwd ?= atom.config.get('docapp.rootPath')
+			stderr ?= (data) -> new StatusView(type: 'alert', message: data.toString())
 
-		if stdout? and not exit?
-			c_stdout = stdout
+#			if stdout? and not exit?
+#				c_stdout = stdout
+#				stdout = (data) ->
+#					@save ?= ''
+#					@save += data
+#				exit = (exit) ->
+#					c_stdout @save ?= ''
+#					@save = null
 			stdout = (data) ->
 				@save ?= ''
 				@save += data
-			exit = (exit) ->
-				c_stdout @save ?= ''
+
+			exit = ()->
+				resolve @save ?= ''
 				@save = null
 
-		new BufferedProcess
-			command: command
-			args: args
-			options: options
-			stdout: stdout
-			stderr: stderr
-			exit: exit
+
+			new BufferedProcess
+				command: command
+				args: args
+				options: options
+				stdout: stdout
+				stderr: stderr
+				exit: exit
+
 
 
 module.exports = git
