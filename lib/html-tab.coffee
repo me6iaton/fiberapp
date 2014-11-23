@@ -7,8 +7,12 @@ module.exports =
     # This may appear to not be used but the tab opener code requires it
     Emitter.includeInto @
 
-    constructor: (@tabTitle, @src) ->
+    constructor: (@tabTitle, @url) ->
 
-    getTitle:     -> @tabTitle
-    getSrc:       -> @src
+    setView: (@htmlTabView) ->
+    getClass:     -> HtmlTab
     getViewClass: -> HtmlTabView
+    getView:      -> @htmlTabView
+    getTitle:     -> @tabTitle
+    getUrl:       -> @url
+#    destroy: ->

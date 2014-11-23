@@ -2,14 +2,14 @@ $ = require('atom').$
 git = require '../git.coffee'
 
 GeneratorFactory = (name) ->
-	Generator = require('./' + name )
-	class GeneratorDecor extends Generator
+  Generator = require('./' + name )
+  class GeneratorDecor extends Generator
 
-		@deployGhpages: ->
-			atom.nprogress.start()
-			super ->
-				console.log("ghpages sucses")
-				atom.nprogress.done()
+    @deployGhpages: ->
+      atom.nprogress.start()
+      super ->
+        console.log("ghpages sucses")
+        atom.nprogress.done()
 #			git.checkDeployUrl()
 #			git.sync (err, state) ->
 #				if state
@@ -19,6 +19,6 @@ GeneratorFactory = (name) ->
 #				else
 #					atom.nprogress.done()
 
-	return GeneratorDecor
+  return GeneratorDecor
 
 module.exports = GeneratorFactory
