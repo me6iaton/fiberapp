@@ -7,17 +7,15 @@ GeneratorFactory = (name) ->
 
     @deployGhpages: ->
       atom.nprogress.start()
-      super ->
-        console.log("ghpages sucses")
-        atom.nprogress.done()
-#			git.checkDeployUrl()
-#			git.sync (err, state) ->
-#				if state
-#		  		super ->
-#							console.log("ghpages sucses")
-#							atom.nprogress.done()
-#				else
-#					atom.nprogress.done()
+      git.checkDeployUrl()
+      git.sync (err, state) ->
+        console.log(err) if err
+        if state
+          super ->
+              console.log("ghpages sucses")
+              atom.nprogress.done()
+        else
+          atom.nprogress.done()
 
   return GeneratorDecor
 
