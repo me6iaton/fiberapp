@@ -4,7 +4,6 @@ src/
 .idea/
 out
 src
-docpad.coffee
 .DS_Store
 *.iml
 .docpad.db
