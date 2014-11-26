@@ -9,4 +9,4 @@
 # https://atom.io/docs/latest/advanced/keymaps
 '.workspace':
   'ctrl-alt-o': 'docpad:toggle'
-  'ctrl-p': 'docapp:preview'
+  'ctrl-alt-p': 'docapp:preview'

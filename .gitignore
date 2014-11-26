@@ -3,7 +3,6 @@ out/
 src/
 .idea/
 out
-src
 .DS_Store
 *.iml
 .docpad.db

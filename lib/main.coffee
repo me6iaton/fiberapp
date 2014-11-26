@@ -1,6 +1,4 @@
 {$, BufferedProcess, Workspace} = require 'atom'
-{spawn} = require "child_process"
-{allowUnsafeEval} = require 'loophole'
 
 StatusView = require './views/status-view'
 path = require('path')
@@ -19,6 +17,12 @@ module.exports =
     rootPath:
       type: 'string'
       default: path.resolve(atom.config.resourcePath, '../../../project')
+    mode:
+      type: 'string'
+      default: 'production'
+    productionPath:
+      type: 'string'
+      default: path.resolve(atom.config.resourcePath, '../../../project/src')
     gitPath:
       type: 'string'
       default: 'git'
@@ -37,7 +41,7 @@ module.exports =
       default: 'docpad'
 
   activate: (state) ->
-    @switchView()
+    @setMode(atom.config.get 'docapp.mode')
     git.checkAvailability()
     @GeneratorDecor = GeneratorFactory atom.config.get('docapp.generator')
 
@@ -49,44 +53,15 @@ module.exports =
       .then () =>
         @GeneratorDecor.deployGhpages()
 
-  switchView: ->
-    if(atom.config.get('docapp.environment') ? 'dev')
-      pathsLength = atom.project.getPaths().length
-      if pathsLength == 0
-        atom.project.setPaths([atom.config.get('docapp.rootPath')])
-        pathsLength = 1
-    else
-      console.log(atom.config.get('docapp.environment'))
-
-#  getGenerator: ->
-#    require('./generators/docpad')
-
-  generateChildProcess: ->
-      options =
-        cwd: '/var/www/atom/docapp'
-  #			cwd: atom.project.getPath()
-      options.env = Object.create(process.env)  unless options.env?
-      options.env["ATOM_SHELL_INTERNAL_RUN_AS_NODE"] = 1
-      node = (if process.platform is "darwin" then path.resolve(process.resourcesPath, "..", "Frameworks", "Atom Helper.app", "Contents", "MacOS", "Atom Helper") else process.execPath)
-      docpadChildProcess = spawn(node, [
-        "/var/www/atom/docapp/node_modules/docpad/bin/docpad"
-        "generate"
-      ], options )
-      docpadChildProcess.stdout.on "data", (data) ->
-        console.log "stdout: " + data
-        return
-      docpadChildProcess.stderr.on "data", (data) ->
-        console.log "stderr: " + data
-        return
-      docpadChildProcess.on "close", (code) ->
-        console.log "child process exited with code " + code
-        return
-
-  sleep: (milliSeconds) ->
-    startTime = new Date().getTime()
-    endTime = startTime + milliSeconds
-    while new Date().getTime() < endTime
-      startTime++
+  setMode: (mode)->
+    # todo-me refactor setMode -> pathsLength
+    pathsLength = atom.project.getPaths().length
+    if pathsLength == 0
+      if mode == 'production'
+        atom.project.setPaths([atom.config.get 'docapp.productionPath'])
+      else if mode == 'dev'
+        atom.project.setPaths([atom.config.get 'docapp.rootPath'])
+    pathsLength = 1
 
   deactivate: ->
 

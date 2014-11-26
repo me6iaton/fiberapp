@@ -48,6 +48,8 @@ class Generator
         return console.log(err.stack)  if err
         docpadInstance.on 'notify', (opt) ->
           console.log(opt.options.title)
+        docpadInstance.on 'generateBefore', (opt) ->
+          atom.nprogress.start() if $('#html-tab-iframe')[0]
         docpadInstance.action 'generate server watch', (err) ->
           console.log(err.stack) if err
           instance = docpadInstance
