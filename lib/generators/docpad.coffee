@@ -19,9 +19,9 @@ class Generator
       socket.send 'Ping'
       setInterval ()->
         socket.send 'Ping'
-      , 30000
+      , 3000
     socket.onmessage = (message) ->
-      console.log('message')
+      console.log(message)
       iframe = document.getElementById('html-tab-iframe')
       if iframe
         data = JSON.parse(message.data)
@@ -51,6 +51,7 @@ class Generator
         docpadInstance.on 'generateBefore', (opt) ->
           atom.nprogress.start() if $('#html-tab-iframe')[0]
         docpadInstance.action 'generate server watch', (err) ->
+#        docpadInstance.action 'server', (err) ->
           console.log(err.stack) if err
           instance = docpadInstance
           livereloadListener()

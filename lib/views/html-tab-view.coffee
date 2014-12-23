@@ -10,4 +10,4 @@ class HtmlTabView extends View
 #      sandbox: 'allow-scripts'
       allowfullscreen: yes
       src: htmlTab.getUrl()
-#    @tag 'webview', src: 'http://0.0.0.0:9778/pages/hello' #
+#    @tag 'webview', src: htmlTab.getUrl() #
