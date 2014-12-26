@@ -4,7 +4,6 @@ HtmlTabView = require './views/html-tab-view'
 module.exports =
   class HtmlTab
 
-    # This may appear to not be used but the tab opener code requires it
     Emitter.includeInto @
 
     constructor: (@tabTitle, @url) ->
@@ -15,4 +14,13 @@ module.exports =
     getView:      -> @htmlTabView
     getTitle:     -> @tabTitle
     getUrl:       -> @url
+    setUrl: (url) ->
+      @url = url
+      @htmlTabView.element.setAttribute 'src', url
+    reload: ->
+      @htmlTabView.element.setAttribute 'src', @url
+#      @htmlTabView.element.contentDocument.location.reload(true);
+#      iframe.onload = ()->
+#      atom.nprogress.done()
 #    destroy: ->
+

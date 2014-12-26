@@ -1,16 +1,8 @@
-{$, BufferedProcess, Workspace} = require 'atom'
-
-StatusView = require './views/status-view'
-path = require('path')
-git = require './git'
-GeneratorFactory = require('./generators/generator')
-
-# add atom.nprogress
-atom.nprogress = require 'nprogress'
-atom.nprogress.configure({
-  parent : '.tab-bar'
-  ,showSpinner: false
-})
+git = generatorFactory = httpServer = null
+path = require 'path'
+#setInterval ()->
+#  console.log(process.memoryUsage().heapUsed)
+#, 200
 
 module.exports =
   config:
@@ -20,9 +12,15 @@ module.exports =
     mode:
       type: 'string'
       default: 'production'
-    productionPath:
+    srcPath:
       type: 'string'
       default: path.resolve(atom.config.resourcePath, '../../../project/src')
+    documentsPath:
+      type: 'string'
+      default: path.resolve(atom.config.resourcePath, '../../../project/src/render')
+    outPath:
+      type: 'string'
+      default: path.resolve(atom.config.resourcePath, '../../../project/out')
     gitPath:
       type: 'string'
       default: 'git'
@@ -39,26 +37,53 @@ module.exports =
     generator:
       type: 'string'
       default: 'docpad'
+    serverAddress:
+      type: 'string'
+      default: '0.0.0.0'
+    serverPort:
+      type: 'number'
+      default: '9778'
+
 
   activate: (state) ->
-    @setMode(atom.config.get 'docapp.mode')
-    git.checkAvailability()
-    @GeneratorDecor = GeneratorFactory atom.config.get('docapp.generator')
+    atom.packages.onDidActivateAll () =>
 
-    atom.workspaceView.command "docapp:deploy-ghpages", => @GeneratorDecor.deployGhpages()
-    atom.workspaceView.command "docapp:preview", =>  @GeneratorDecor.activatePreview()
+      git = require './git'
+      generatorFactory = require './generators/generator'
+      httpServer = require './http-server'
 
-    atom.on 'merge-conflicts:done', (event) =>
-      git.gitCmd args: ['rebase', '--continue']
-      .then () =>
-        @GeneratorDecor.deployGhpages()
+      # add atom.nprogress
+      atom.nprogress = require 'nprogress'
+      atom.nprogress.configure({
+        parent : '.tab-bar'
+        ,showSpinner: false
+      })
+
+      @setMode(atom.config.get 'docapp.mode')
+      git.checkAvailability()
+      @generator = generatorFactory atom.config.get 'docapp.generator'
+
+      atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
+      atom.workspaceView.command "docapp:preview", =>  @generator.activatePreview()
+
+      atom.on 'merge-conflicts:done', (event) =>
+        git.gitCmd args: ['rebase', '--continue']
+        .then () =>
+          @generator.deployGhpages()
+
+      httpServer.run
+        path: atom.config.get('docapp.outPath')
+        address: atom.config.get('docapp.serverAddress')
+        port: atom.config.get('docapp.serverPort')
+      @generator.run()
+#      @generator.runChild()
 
   setMode: (mode)->
     # todo-me refactor setMode -> pathsLength
     pathsLength = atom.project.getPaths().length
     if pathsLength == 0
       if mode == 'production'
-        atom.project.setPaths([atom.config.get 'docapp.productionPath'])
+        atom.project.setPaths([atom.config.get 'docapp.srcPath'])
       else if mode == 'dev'
         atom.project.setPaths([atom.config.get 'docapp.rootPath'])
     pathsLength = 1

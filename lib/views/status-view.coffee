@@ -1,5 +1,5 @@
 {Subscriber} = require 'emissary'
-{$, View} = require 'atom'
+{$, View} = require 'space-pen'
 
 module.exports =
   class StatusView extends View
