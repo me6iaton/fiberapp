@@ -17,7 +17,6 @@ GeneratorFactory = (name) ->
       filePath = atom.workspaceView.getActiveView()?.editor?.buffer.file?.path
       extname = path.extname filePath
       if filePath and  extname == '.md'
-        atom.nprogress.start()
         urlPath = filePath.replace(atom.config.get('docapp.documentsPath'), '').slice(0, -3)
         fileUrl = "http://#{atom.config.get 'docapp.serverAddress'}:#{atom.config.get 'docapp.serverPort'}#{urlPath}"
         if @HtmlTab?
@@ -26,7 +25,6 @@ GeneratorFactory = (name) ->
           @HtmlTab = new HtmlTab("preview", fileUrl)
         super () =>
           atom.workspace.activePane.activateItem @HtmlTab
-          atom.nprogress.done()
 
     @deployGhpages: ->
       atom.nprogress.start()

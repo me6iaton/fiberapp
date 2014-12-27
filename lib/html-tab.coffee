@@ -15,8 +15,9 @@ module.exports =
     getTitle:     -> @tabTitle
     getUrl:       -> @url
     setUrl: (url) ->
-      @url = url
-      @htmlTabView.element.setAttribute 'src', url
+      if @url != url
+        @url = url
+        @htmlTabView.element.setAttribute 'src', url
     reload: ->
       @htmlTabView.element.setAttribute 'src', @url
 #      @htmlTabView.element.contentDocument.location.reload(true);

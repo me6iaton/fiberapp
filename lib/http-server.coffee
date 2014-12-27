@@ -5,7 +5,7 @@ child = null
 module.exports =
   run: ({path, address, port})->
 #    args = [path, '-p', port, '-s']
-    args = [path, '-a', address, '-p', port, '-s']
+    args = [path, '-a', address, '-p', port, '-s', '-c', '1']
     stderr = (err) ->
       console.error(err)
     stdout = (data)->

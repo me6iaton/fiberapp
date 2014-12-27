@@ -75,6 +75,7 @@ module.exports =
         path: atom.config.get('docapp.outPath')
         address: atom.config.get('docapp.serverAddress')
         port: atom.config.get('docapp.serverPort')
+
       @generator.run()
 #      @generator.runChild()
 
