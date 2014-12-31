@@ -37,7 +37,7 @@ module.exports =
     generator:
       type: 'string'
       default: 'docpad'
-    serverAddress:
+    serverHost:
       type: 'string'
       default: '0.0.0.0'
     serverPort:
@@ -71,12 +71,17 @@ module.exports =
         .then () =>
           @generator.deployGhpages()
 
-      httpServer.run
-        path: atom.config.get('docapp.outPath')
-        address: atom.config.get('docapp.serverAddress')
+#      httpServer.run
+#        root: atom.config.get('docapp.outPath')
+#        address: atom.config.get('docapp.serverAddress')
+#        port: atom.config.get('docapp.serverPort')
+
+      httpServer.runInside
+        root: atom.config.get('docapp.outPath')
+        host: atom.config.get('docapp.serverHost')
         port: atom.config.get('docapp.serverPort')
 
-      @generator.run()
+#      @generator.run()
 #      @generator.runChild()
 
   setMode: (mode)->

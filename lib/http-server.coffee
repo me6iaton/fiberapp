@@ -1,11 +1,12 @@
 {BufferedNodeProcess} = require 'atom'
 {$} = require 'space-pen'
+httpServer = require('../node_modules/http-server/lib/http-server')
 child = null
 
 module.exports =
-  run: ({path, address, port})->
+  run: ({root, host, port})->
 #    args = [path, '-p', port, '-s']
-    args = [path, '-a', address, '-p', port, '-s', '-c', '1']
+    args = [root, '-a', host, '-p', port, '-s', '-c', '1']
     stderr = (err) ->
       console.error(err)
     stdout = (data)->
@@ -22,3 +23,16 @@ module.exports =
 
     $(window).on 'beforeunload', =>
       child.kill()
+
+  runInside: ({root, host, port})->
+    options =
+      root: root
+      cache: 1
+      showDir: true
+      autoIndex: true
+      ext: 'html'
+      logFn: null
+
+    server = httpServer.createServer(options)
+    server.listen port, host, ->
+      uri = [ "http", "://", host, ":", port ].join("")
