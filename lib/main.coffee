@@ -1,26 +1,35 @@
 git = generatorFactory = httpServer = null
 path = require 'path'
+fs = require 'fs'
 #setInterval ()->
 #  console.log(process.memoryUsage().heapUsed)
 #, 200
+if process.platform == 'win32'
+  # atom.config.resourcePath = atom.config.resourcePath.slice(0, 1).toUpperCase() + atom.config.resourcePath.slice(1)
+  projectPath = path.resolve(atom.config.resourcePath, '../../project')
+  if fs.lstatSync(projectPath).isSymbolicLink()
+    projectPath = fs.readlinkSync(projectPath)
+    projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)    
+else
+  projectPath = path.resolve(atom.config.resourcePath, '../../../project')
 
 module.exports =
   config:
     rootPath:
       type: 'string'
-      default: path.resolve(atom.config.resourcePath, '../../../project')
+      default: projectPath
     mode:
       type: 'string'
       default: 'production'
     srcPath:
       type: 'string'
-      default: path.resolve(atom.config.resourcePath, '../../../project/src')
+      default: path.resolve(projectPath, './src')
     documentsPath:
       type: 'string'
-      default: path.resolve(atom.config.resourcePath, '../../../project/src/render')
+      default: path.resolve(projectPath, './src/render')
     outPath:
       type: 'string'
-      default: path.resolve(atom.config.resourcePath, '../../../project/out')
+      default: path.resolve(projectPath, './out')
     gitPath:
       type: 'string'
       default: 'git'
