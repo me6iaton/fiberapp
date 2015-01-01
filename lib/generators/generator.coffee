@@ -18,7 +18,7 @@ GeneratorFactory = (name) ->
       extname = path.extname filePath
       if filePath and  extname == '.md'
         urlPath = filePath.replace(atom.config.get('docapp.documentsPath'), '').slice(0, -3)
-        fileUrl = "http://#{atom.config.get 'docapp.serverAddress'}:#{atom.config.get 'docapp.serverPort'}#{urlPath}"
+        fileUrl = "http://#{atom.config.get 'docapp.serverHost'}:#{atom.config.get 'docapp.serverPort'}#{urlPath}"
         if @HtmlTab?
           @HtmlTab.setUrl fileUrl
         else

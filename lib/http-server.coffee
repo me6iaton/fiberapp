@@ -1,11 +1,8 @@
 {BufferedNodeProcess} = require 'atom'
-{$} = require 'space-pen'
 httpServer = require('../node_modules/http-server/lib/http-server')
-child = null
 
 module.exports =
-  run: ({root, host, port})->
-#    args = [path, '-p', port, '-s']
+  runChildProcess: ({root, host, port})->
     args = [root, '-a', host, '-p', port, '-s', '-c', '1']
     stderr = (err) ->
       console.error(err)
@@ -21,10 +18,10 @@ module.exports =
       stderr: stderr
       exit: exit
 
-    $(window).on 'beforeunload', =>
+    window.addEventListener 'beforeunload', =>
       child.kill()
 
-  runInside: ({root, host, port})->
+  run: ({root, host, port})->
     options =
       root: root
       cache: 1
