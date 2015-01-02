@@ -3,9 +3,8 @@ HtmlTabView = require './views/html-tab-view'
 
 module.exports =
   class HtmlTab
-
     Emitter.includeInto @
-
+    
     constructor: (@tabTitle, @url) ->
 
     setView: (@htmlTabView) ->
@@ -20,8 +19,5 @@ module.exports =
         @htmlTabView.element.setAttribute 'src', url
     reload: ->
       @htmlTabView.element.setAttribute 'src', @url
-#      @htmlTabView.element.contentDocument.location.reload(true);
-#      iframe.onload = ()->
 #      atom.nprogress.done()
-#    destroy: ->
 

@@ -3,9 +3,6 @@
 
 configDefaults =
   rootPath: atom.config.get('docapp.rootPath')
-  databaseCache: true
-  regenerateDelay: 10
-  logLevel: 0
 
 Docpad = require(configDefaults.rootPath+'/node_modules/docpad')
 
@@ -78,9 +75,6 @@ class Generator
   @activatePreview: (callback)->
     callback()
 
-
-
-
   @deployGhpages: (callback) ->
     configDefaults.env = 'static'
     Docpad.createInstance configDefaults, (err, docpadInstance) ->
@@ -88,8 +82,6 @@ class Generator
       docpadInstance.on 'notify', (opt) ->
         console.log(opt.options.title)
       docpadInstance.getPlugin('ghpages').deployToGithubPages callback
-
-
 
 module.exports = Generator
 

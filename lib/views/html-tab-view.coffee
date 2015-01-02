@@ -4,12 +4,13 @@ module.exports =
 class HtmlTabView extends View
 
   @content: (@HtmlTab)->
-    @iframe
-      class: 'iframe'
-      id: 'html-tab-iframe'
-#      sandbox: 'allow-scripts'
-      allowfullscreen: yes
-      src: @HtmlTab.getUrl()
+    @div class:'browser-page', tabindex:-1, =>  
+      @iframe
+        class: 'iframe'
+        id: 'html-tab-iframe'
+        # sandbox:  'allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts'
+        allowfullscreen: yes
+        src: @HtmlTab.getUrl()
 #    @tag 'webview', src: htmlTab.getUrl() #
 
   initialize: (HtmlTab) ->
@@ -21,3 +22,5 @@ class HtmlTabView extends View
     @open = true
   detached: ->
     @open = false
+  destroy: -> 
+    @detach()  

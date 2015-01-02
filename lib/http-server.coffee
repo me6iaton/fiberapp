@@ -24,7 +24,7 @@ module.exports =
   run: ({root, host, port})->
     options =
       root: root
-      cache: 1
+      cache: 'no-cache'
       showDir: true
       autoIndex: true
       ext: 'html'
