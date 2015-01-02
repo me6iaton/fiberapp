@@ -1,10 +1,9 @@
-{Emitter}   = require process.resourcesPath + '/app/node_modules/emissary'
+{Emitter}   = require 'emissary'
 HtmlTabView = require './views/html-tab-view'
 
 module.exports =
   class HtmlTab
     Emitter.includeInto @
-    
     constructor: (@tabTitle, @url) ->
 
     setView: (@htmlTabView) ->
@@ -16,8 +15,9 @@ module.exports =
     setUrl: (url) ->
       if @url != url
         @url = url
-        @htmlTabView.element.setAttribute 'src', url
+        @htmlTabView.page.setAttribute 'src', url
     reload: ->
-      @htmlTabView.element.setAttribute 'src', @url
-#      atom.nprogress.done()
+        debugger
+        @htmlTabView.page.setAttribute 'src', @url
+        atom.nprogress.done()
 

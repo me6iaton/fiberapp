@@ -48,21 +48,18 @@ class Generator
       instance = 'already running'
       Docpad.createInstance configDefaults, (err, docpadInstance) ->
         return console.log(err.stack)  if err
-        docpadInstance.on 'notify', (opts, next) ->
+        docpadInstance.on 'notify', (opts) ->
           if opts.options.title == "Website generating..." and decorator.HtmlTab?.htmlTabView?.open
             atom.nprogress.start()
           console.log(opts.options.title, opts.message)
-          next()
-        docpadInstance.on 'generateBefore', (opts, next) ->
-          atom.nprogress.start() if decorator.HtmlTab?.htmlTabView?.open
-          next()
-        docpadInstance.on 'generateAfter', (opts, next) ->
+        # docpadInstance.on 'generateBefore', (opts, next) ->
+        #   atom.nprogress.start() if decorator.HtmlTab?.htmlTabView?.open
+        #   next()
+        docpadInstance.on 'generateAfter', (opts) ->
           decorator.HtmlTab.reload() if decorator.HtmlTab?.htmlTabView?.open
           atom.nprogress.done()
-          next()
-        docpadInstance.on 'docpadDestroy', (opts, next) ->
+        docpadInstance.on 'docpadDestroy', (opts) ->
           instance = null
-          next()
         docpadInstance.action 'watch', (err) ->
 #        docpadInstance.action 'genetate watch', (err) ->
 #        docpadInstance.action 'load ready  watch', (err) ->

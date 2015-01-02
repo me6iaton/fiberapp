@@ -1,10 +1,10 @@
-{$,View} = require 'space-pen'
+{View} = require 'space-pen'
 
 module.exports =
 class HtmlTabView extends View
 
   @content: (@HtmlTab)->
-    @div class:'browser-page', tabindex:-1, =>  
+    @div class:'html-tab', tabindex:-1, =>  
       @iframe
         class: 'iframe'
         id: 'html-tab-iframe'
@@ -15,7 +15,8 @@ class HtmlTabView extends View
 
   initialize: (HtmlTab) ->
     HtmlTab.setView @
-    @.element.onload = (e, element, opt) ->
+    @page = @.element.querySelector('iframe')    
+    @page.onload = () ->
       HtmlTabView.HtmlTab.url = this.contentWindow.location.href
 
   attached: ->
