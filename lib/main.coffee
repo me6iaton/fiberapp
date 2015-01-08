@@ -1,17 +1,16 @@
 git = generatorFactory = httpServer = null
 path = require 'path'
 fs = require 'fs'
-#setInterval ()->
-#  console.log(process.memoryUsage().heapUsed)
-#, 200
+
 if process.platform == 'win32'
-  # atom.config.resourcePath = atom.config.resourcePath.slice(0, 1).toUpperCase() + atom.config.resourcePath.slice(1)
   projectPath = path.resolve(atom.config.resourcePath, '../../project')
-  if fs.lstatSync(projectPath).isSymbolicLink()
-    projectPath = fs.readlinkSync(projectPath)
-    projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)    
 else
   projectPath = path.resolve(atom.config.resourcePath, '../../../project')
+
+if fs.lstatSync(projectPath).isSymbolicLink()
+  projectPath = fs.readlinkSync(projectPath)
+  if process.platform == 'win32'
+    projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
 module.exports =
   config:
@@ -21,6 +20,9 @@ module.exports =
     mode:
       type: 'string'
       default: 'production'
+    previewSplitRight:
+      type: 'boolean'
+      default: true
     srcPath:
       type: 'string'
       default: path.resolve(projectPath, './src')
@@ -73,7 +75,7 @@ module.exports =
       @generator = generatorFactory atom.config.get 'docapp.generator'
 
       atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
-      atom.workspaceView.command "docapp:preview", =>  @generator.activatePreview()
+      atom.workspaceView.command "docapp:preview", =>  @generator.togglePreview()
 
       atom.on 'merge-conflicts:done', (event) =>
         git.gitCmd args: ['rebase', '--continue']
@@ -90,7 +92,7 @@ module.exports =
         host: atom.config.get('docapp.serverHost')
         port: atom.config.get('docapp.serverPort')
 
-      @generator.run()
+#      @generator.run()
 #      @generator.runChild()
 
   setMode: (mode)->

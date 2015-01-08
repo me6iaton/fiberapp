@@ -7,7 +7,6 @@ configDefaults =
 Docpad = require(configDefaults.rootPath+'/node_modules/docpad')
 
 class Generator
-  decorator = null
   instance = null
 
   @runChild: (callback)->
@@ -35,7 +34,6 @@ class Generator
       console.error(error)
 
   @run: (callback) ->
-    decorator ?= @
     if instance?
       if instance == 'already running'
         setTimeout () =>
@@ -49,28 +47,21 @@ class Generator
       Docpad.createInstance configDefaults, (err, docpadInstance) ->
         return console.log(err.stack)  if err
         docpadInstance.on 'notify', (opts) ->
-          if opts.options.title == "Website generating..." and decorator.HtmlTab?.htmlTabView?.open
+          if opts.options.title == "Website generating..."
             atom.nprogress.start()
           console.log(opts.options.title, opts.message)
-        # docpadInstance.on 'generateBefore', (opts, next) ->
-        #   atom.nprogress.start() if decorator.HtmlTab?.htmlTabView?.open
-        #   next()
         docpadInstance.on 'generateAfter', (opts) ->
-          decorator.HtmlTab.reload() if decorator.HtmlTab?.htmlTabView?.open
+          atom.htmlTab.reload() if atom.htmlTab?
           atom.nprogress.done()
         docpadInstance.on 'docpadDestroy', (opts) ->
           instance = null
-        docpadInstance.action 'watch', (err) ->
+        docpadInstance.action 'generate watch', (err) ->
 #        docpadInstance.action 'genetate watch', (err) ->
 #        docpadInstance.action 'load ready  watch', (err) ->
           console.log(err.stack) if err
           instance = docpadInstance
           console.timeEnd('docpad-run')
           callback()
-
-
-  @activatePreview: (callback)->
-    callback()
 
   @deployGhpages: (callback) ->
     configDefaults.env = 'static'

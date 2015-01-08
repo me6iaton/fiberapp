@@ -1,7 +1,7 @@
 #$ = require('atom').$  # todo-me  update require $
 path = require('path')
 git = require '../git.coffee'
-HtmlTab = require('../html-tab')
+htmlTab = require('../html-tab')
 
 GeneratorFactory = (name) ->
   Generator = require('./' + name )
@@ -13,18 +13,13 @@ GeneratorFactory = (name) ->
 
     @kill: ()->
 
-    @activatePreview: ->
+    @togglePreview: ->
+      url = "http://#{atom.config.get 'docapp.serverHost'}:#{atom.config.get 'docapp.serverPort'}"
       filePath = atom.workspaceView.getActiveView()?.editor?.buffer.file?.path
       extname = path.extname filePath
       if filePath and  extname == '.md'
-        urlPath = filePath.replace(atom.config.get('docapp.documentsPath'), '').slice(0, -3)
-        fileUrl = "http://#{atom.config.get 'docapp.serverHost'}:#{atom.config.get 'docapp.serverPort'}#{urlPath}"
-        if @HtmlTab?
-          @HtmlTab.setUrl fileUrl
-        else
-          @HtmlTab = new HtmlTab("preview", fileUrl)
-        super () =>
-          atom.workspace.activePane.activateItem @HtmlTab
+        url = url + filePath.replace(atom.config.get('docapp.documentsPath'), '').slice(0, -3)
+      htmlTab.toggle url
 
     @deployGhpages: ->
       atom.nprogress.start()

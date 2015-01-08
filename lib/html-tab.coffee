@@ -1,23 +1,33 @@
 {Emitter}   = require 'emissary'
 HtmlTabView = require './views/html-tab-view'
 
-module.exports =
-  class HtmlTab
-    Emitter.includeInto @
-    constructor: (@tabTitle, @url) ->
+class HtmlTab
+  Emitter.includeInto @
+  constructor: (@tabTitle, @url) ->
+    atom.htmlTab = @
+    @pane = atom.workspace.getActivePane()
+  setView: (@htmlTabView) ->
+  getClass:     -> HtmlTab
+  getViewClass: -> HtmlTabView
+  getView:      -> @htmlTabView
+  getTitle:     -> @tabTitle
+  getUrl:       -> @url
+  setUrl: (url) ->
+#    if @url != url
+    @url = url
+    @htmlTabView.page.setAttribute 'src', url
+  reload: ->
+    @htmlTabView.page.setAttribute 'src', @url
+    atom.nprogress.done()
+  destroy: ->
+    delete atom.htmlTab
 
-    setView: (@htmlTabView) ->
-    getClass:     -> HtmlTab
-    getViewClass: -> HtmlTabView
-    getView:      -> @htmlTabView
-    getTitle:     -> @tabTitle
-    getUrl:       -> @url
-    setUrl: (url) ->
-      if @url != url
-        @url = url
-        @htmlTabView.page.setAttribute 'src', url
-    reload: ->
-        debugger
-        @htmlTabView.page.setAttribute 'src', @url
-        atom.nprogress.done()
+module.exports =
+  toggle: (url)->
+    if not atom.htmlTab?
+      atom.workspace.activePane.splitRight {copyActiveItem: false} if atom.config.get('docapp.previewSplitRight')
+      atom.workspace.activePane.activateItem new HtmlTab("preview", url)
+    else
+      atom.htmlTab.pane.destroyItem(atom.htmlTab)
+#      atom.htmlTab.setUrl(url)
 
