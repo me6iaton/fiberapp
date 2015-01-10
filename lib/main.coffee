@@ -1,37 +1,47 @@
-git = generatorFactory = httpServer = null
+git = httpServer = null
+generatorFactory = require './generators/generator'
 path = require 'path'
 fs = require 'fs'
 
-if process.platform == 'win32'
-  projectPath = path.resolve(atom.config.resourcePath, '../../project')
-else
-  projectPath = path.resolve(atom.config.resourcePath, '../../../project')
+projectPath = path.resolve(atom.config.resourcePath, '../../project')
 
 if fs.lstatSync(projectPath).isSymbolicLink()
   projectPath = fs.readlinkSync(projectPath)
   if process.platform == 'win32'
     projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
+console.time('fs.existsSync')
+for confname in ['config.toml', 'docpad.coffee', '_config.yml']
+  if fs.existsSync path.resolve(projectPath, './' + confname )
+    generatorName = switch confname
+      when 'config.toml' then 'hugo'
+      when 'docpad.coffee' then 'docpad'
+      when '_config.yml' then 'hexo'
+    break
+console.timeEnd('fs.existsSync')
+
+generator = generatorFactory(generatorName)
+
 module.exports =
   config:
-    rootPath:
+    projectPath:
       type: 'string'
       default: projectPath
+    srcPath:
+      type: 'string'
+      default: path.resolve(projectPath, generator.config.srcPath)
+    documentsPath:
+      type: 'string'
+      default: path.resolve(projectPath, generator.config.documentsPath)
+    outPath:
+      type: 'string'
+      default: path.resolve(projectPath, generator.config.outPath)
     mode:
       type: 'string'
       default: 'production'
     previewSplitRight:
       type: 'boolean'
       default: true
-    srcPath:
-      type: 'string'
-      default: path.resolve(projectPath, './src')
-    documentsPath:
-      type: 'string'
-      default: path.resolve(projectPath, './src/render')
-    outPath:
-      type: 'string'
-      default: path.resolve(projectPath, './out')
     gitPath:
       type: 'string'
       default: 'git'
@@ -47,7 +57,7 @@ module.exports =
       default: 'dev'
     generator:
       type: 'string'
-      default: 'docpad'
+      default: generatorName
     serverHost:
       type: 'string'
       default: 'localhost'
@@ -57,10 +67,9 @@ module.exports =
 
 
   activate: (state) ->
+    @generator = generator
     atom.packages.onDidActivateAll () =>
-
       git = require './git'
-      generatorFactory = require './generators/generator'
       httpServer = require './http-server'
 
       # add atom.nprogress
@@ -70,12 +79,11 @@ module.exports =
         ,showSpinner: false
       })
 
-      @setMode(atom.config.get 'docapp.mode')
       git.checkAvailability()
-      @generator = generatorFactory atom.config.get 'docapp.generator'
+      @setMode(atom.config.get 'docapp.mode')
 
-      atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
-      atom.workspaceView.command "docapp:preview", =>  @generator.togglePreview()
+      atom.workspaceView.command "docapp:deploy-ghpages", -> @generator.deployGhpages()
+      atom.workspaceView.command "docapp:preview", ->  @generator.togglePreview()
 
       atom.on 'merge-conflicts:done', (event) =>
         git.gitCmd args: ['rebase', '--continue']

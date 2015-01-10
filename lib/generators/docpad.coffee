@@ -1,17 +1,22 @@
 {BufferedNodeProcess} = require 'atom'
-{$} = require 'space-pen'
 
+projectPath = atom.config.get 'docapp.projectPath'
 configDefaults =
-  rootPath: atom.config.get('docapp.rootPath')
+  rootPath: projectPath
 
-Docpad = require(configDefaults.rootPath+'/node_modules/docpad')
+Docpad = require(projectPath + '/node_modules/docpad')
 
 class Generator
   instance = null
 
+  @config =
+    srcPath: './src'
+    documentsPath: './src/render'
+    outPath: './out'
+
   @runChild: (callback)->
     options =
-      cwd: atom.config.get('docapp.rootPath')
+      cwd: atom.config.get 'docapp.projectPath'
       detached: true
 
     args = ['watch']
