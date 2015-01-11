@@ -36,6 +36,9 @@ module.exports =
     outPath:
       type: 'string'
       default: path.resolve(projectPath, generator.config.outPath)
+    theme:
+      type: 'string'
+      default: generator.config.theme
     mode:
       type: 'string'
       default: 'production'
@@ -63,7 +66,7 @@ module.exports =
       default: 'localhost'
     serverPort:
       type: 'number'
-      default: '9778'
+      default: '1313'
 
 
   activate: (state) ->
@@ -82,8 +85,8 @@ module.exports =
       git.checkAvailability()
       @setMode(atom.config.get 'docapp.mode')
 
-      atom.workspaceView.command "docapp:deploy-ghpages", -> @generator.deployGhpages()
-      atom.workspaceView.command "docapp:preview", ->  @generator.togglePreview()
+      atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
+      atom.workspaceView.command "docapp:preview", =>  @generator.togglePreview()
 
       atom.on 'merge-conflicts:done', (event) =>
         git.gitCmd args: ['rebase', '--continue']
@@ -100,7 +103,7 @@ module.exports =
         host: atom.config.get('docapp.serverHost')
         port: atom.config.get('docapp.serverPort')
 
-#      @generator.run()
+      @generator.run()
 #      @generator.runChild()
 
   setMode: (mode)->

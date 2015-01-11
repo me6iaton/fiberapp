@@ -13,6 +13,7 @@ class Generator
     srcPath: './src'
     documentsPath: './src/render'
     outPath: './out'
+    theme: ''
 
   @runChild: (callback)->
     options =
