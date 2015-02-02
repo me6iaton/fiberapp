@@ -17,6 +17,8 @@ class Generator
       command = command + "-x64"
     else
       command = command + "-x32"
+    if process.platform is "win32"
+      command = command + ".exe"
     args = [
       '-s', projectPath ,
       "--theme=#{atom.config.get 'docapp.theme'}" ,
