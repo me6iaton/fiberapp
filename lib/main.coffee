@@ -11,10 +11,11 @@ if fs.lstatSync(projectPath).isSymbolicLink()
     projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
 console.time('fs.existsSync')
-for confname in ['config.toml', 'docpad.coffee', '_config.yml']
+#todo-me ff
+for confname in ['config.yaml', 'docpad.coffee', '_config.yml']
   if fs.existsSync path.resolve(projectPath, './' + confname )
     generatorName = switch confname
-      when 'config.toml' then 'hugo'
+      when 'config.yaml' then 'hugo'
       when 'docpad.coffee' then 'docpad'
       when '_config.yml' then 'hexo'
     break
