@@ -13,6 +13,10 @@ class Generator
   @run: (callback) ->
     projectPath = atom.config.get 'docapp.projectPath'
     command = path.resolve(projectPath, "./bin/hugo-#{process.platform}")
+    if process.arch is 'x64' or process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432')
+      command = command + "-x64"
+    else
+      command = command + "-x32"
     args = [
       '-s', projectPath ,
       "--theme=#{atom.config.get 'docapp.theme'}" ,
