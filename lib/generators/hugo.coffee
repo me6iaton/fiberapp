@@ -44,4 +44,7 @@ class Generator
       hugoProcess.kill()
     callback()
 
+  @deployGhpages: (callback) ->
+    callback()
+
 module.exports = Generator

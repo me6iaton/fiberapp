@@ -82,7 +82,7 @@ git =
     new Promise (resolve, reject) ->
       command = _getGitPath()
       options ?= {}
-      options.cwd ?= atom.config.get('docapp.rootPath')
+      options.cwd ?= atom.config.get('docapp.projectPath')
       stderr ?= (data) -> new StatusView(type: 'alert', message: data.toString())
 
 #			if stdout? and not exit?
@@ -93,6 +93,7 @@ git =
 #				exit = (exit) ->
 #					c_stdout @save ?= ''
 #					@save = null
+
       stdout = (data) ->
         @save ?= ''
         @save += data
