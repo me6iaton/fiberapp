@@ -17,7 +17,8 @@ class HtmlTab
     @url = url
     @htmlTabView.page.setAttribute 'src', url
   reload: ->
-    @htmlTabView.page.setAttribute 'src', @url
+    @htmlTabView.page.reload()
+    # @htmlTabView.page.setAttribute 'src', @url
     atom.nprogress.done()
   destroy: ->
     delete atom.htmlTab
