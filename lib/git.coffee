@@ -30,7 +30,7 @@ mergeConflictsDetect = () ->
 git =
   sync: (callback) ->
     mergeConflictsDetect().then () =>
-      @gitCmd args: ['add', '.']
+      @gitCmd args: ['add', '--all']
     .then () =>
       @gitCmd args: ['status', '-s']
     .then (resolve) =>
