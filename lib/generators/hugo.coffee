@@ -41,6 +41,10 @@ class Generator
       console.error(error)
     window.addEventListener 'beforeunload', ->
       hugoProcess.kill()
+      if process.platform is "win32"
+        ms = 500
+        ms += new Date().getTime()
+        continue  while new Date() < ms
     callback()
 
   @deployGhpages: (callback) ->
