@@ -9,7 +9,8 @@
     'submenu': [
       'label': 'Docapp'
       'submenu': [
-        { 'label': 'Docapp deploy github pages', 'command': 'docapp:deploy-ghpages' }
+        { 'label': 'Synchronize repository', 'command': 'docapp:git-sync' }
+        { 'label': 'Deploy to  github pages', 'command': 'docapp:deploy-ghpages' }
       ]
     ]
   }

@@ -11,8 +11,8 @@ if fs.lstatSync(projectPath).isSymbolicLink()
     projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
 console.time('fs.existsSync')
-#todo-me ff
 for confname in ['config.yaml', 'docpad.coffee', '_config.yml']
+  #todo-me fix load generator ( array configfiles)
   if fs.existsSync path.resolve(projectPath, './' + confname )
     generatorName = switch confname
       when 'config.yaml' then 'hugo'
@@ -86,6 +86,10 @@ module.exports =
       git.checkAvailability()
       @setMode(atom.config.get 'docapp.mode')
 
+      atom.workspaceView.command "docapp:git-sync", =>
+        atom.nprogress.start()
+        git.sync().then ()->
+          atom.nprogress.done()
       atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
       atom.workspaceView.command "docapp:preview", =>  @generator.togglePreview()
 
@@ -104,8 +108,8 @@ module.exports =
         host: atom.config.get('docapp.serverHost')
         port: atom.config.get('docapp.serverPort')
 
-      @generator.run()
 #      @generator.runChild()
+      @generator.run()
 
   setMode: (mode)->
     # todo-me refactor setMode -> pathsLength
