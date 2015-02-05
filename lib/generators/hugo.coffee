@@ -29,9 +29,11 @@ class Generator
       command: command
       args: args
       stdout: (output) ->
-        if atom.htmlTab?          
+        if atom.htmlTab?
           if output.indexOf('Change detected') isnt -1
-            atom.htmlTab.reload()
+            setTimeout ()->
+              atom.htmlTab.reload()
+            , 100
             # atom.nprogress.done()
       stderr: (err) ->
         console.error err
