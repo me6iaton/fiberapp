@@ -15,7 +15,7 @@ GeneratorFactory = (name) ->
 
     @togglePreview: ->
       url = "http://#{atom.config.get 'docapp.serverHost'}:#{atom.config.get 'docapp.serverPort'}"
-      filePath = atom.workspaceView.getActiveView()?.editor?.buffer.file?.path
+      filePath = atom.views.getView(atom.workspace)?.editor?.buffer.file?.path
       extname = path.extname filePath
       if filePath and  extname == '.md'
         url = url + filePath.replace(atom.config.get('docapp.documentsPath'), '').slice(0, -3)

@@ -86,12 +86,13 @@ module.exports =
       git.checkAvailability()
       @setMode(atom.config.get 'docapp.mode')
 
-      atom.workspaceView.command "docapp:git-sync", =>
-        atom.nprogress.start()
-        git.sync().then ()->
-          atom.nprogress.done()
-      atom.workspaceView.command "docapp:deploy-ghpages", => @generator.deployGhpages()
-      atom.workspaceView.command "docapp:preview", =>  @generator.togglePreview()
+      atom.commands.add 'atom-workspace',
+        'docapp:git-sync': =>
+          atom.nprogress.start()
+          git.sync().then ()->
+            atom.nprogress.done()
+        'docapp:deploy-ghpages': => @generator.deployGhpages()
+        'docapp:preview': => @generator.togglePreview()
 
       atom.on 'merge-conflicts:done', (event) =>
         git.gitCmd args: ['rebase', '--continue']

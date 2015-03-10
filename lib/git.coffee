@@ -16,7 +16,7 @@ mergeConflictsDetect = () ->
           console.error(err) if err
           reject(err) if err
           if not state.isEmpty()
-            atom.workspaceView.trigger 'merge-conflicts:detect'
+            atom.commands.dispatch(atom.views.getView(atom.workspace), 'merge-conflicts:detect')
             reject()
           else
             resolve()
