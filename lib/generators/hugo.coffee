@@ -33,7 +33,7 @@ class Generator
           if output.indexOf('Change detected') isnt -1
             setTimeout ()->
               atom.htmlTab.reload()
-            , 100
+            , 200
             # atom.nprogress.done()
       stderr: (err) ->
         console.error err
