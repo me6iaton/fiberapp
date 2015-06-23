@@ -1,7 +1,10 @@
-# See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  '.overlayer':
-      'Docapp deploy github pages': 'docapp:deploy-ghpages'
+  'atom-workspace': [
+    {
+      'label': 'Docapp deploy github pages'
+      'command': 'docapp:deploy-ghpages'
+    }
+  ]
 
 'menu': [
   {

@@ -13,7 +13,7 @@
     "http-server": "^0.7.4",
     "loophole": "^1.0.0",
     "nprogress": "^0.1.6",
-    "space-pen": "^4.3.0"
+    "space-pen": "^5.1.1"
   },
   "devDependencies": {
     "gulp": "^3.8.10",

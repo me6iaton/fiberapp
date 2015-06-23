@@ -3,6 +3,7 @@ generatorFactory = require './generators/generator'
 path = require 'path'
 fs = require 'fs'
 
+
 projectPath = path.resolve(atom.config.resourcePath, '../../project')
 
 if fs.lstatSync(projectPath).isSymbolicLink()
@@ -11,17 +12,22 @@ if fs.lstatSync(projectPath).isSymbolicLink()
     projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
 console.time('fs.existsSync')
-for confname in ['config.yaml', 'docpad.coffee', '_config.yml']
+for confname in ['config.yaml', 'config.toml', 'docpad.coffee', '_config.yml']
   #todo-me fix load generator ( array configfiles)
   if fs.existsSync path.resolve(projectPath, './' + confname )
     generatorName = switch confname
       when 'config.yaml' then 'hugo'
+      when 'config.toml' then 'hugo'
       when 'docpad.coffee' then 'docpad'
       when '_config.yml' then 'hexo'
     break
 console.timeEnd('fs.existsSync')
 
-generator = generatorFactory(generatorName)
+if(generatorName)
+  generator = generatorFactory(generatorName)
+else
+  console.error('statatic generator not found')
+  return
 
 module.exports =
   config:
@@ -72,7 +78,7 @@ module.exports =
 
   activate: (state) ->
     @generator = generator
-    atom.packages.onDidActivateAll () =>
+    atom.packages.onDidActivateInitialPackages () =>
       git = require './git'
       httpServer = require './http-server'
 
@@ -94,10 +100,30 @@ module.exports =
         'docapp:deploy-ghpages': => @generator.deployGhpages()
         'docapp:preview': => @generator.togglePreview()
 
-      atom.on 'merge-conflicts:done', (event) =>
-        git.gitCmd args: ['rebase', '--continue']
-        .then () =>
-          @generator.deployGhpages()
+      # {CompositeDisposable} = require 'atom'
+
+      # pkg = require atom.packages.getLoadedPackage('merge-conflicts').mainModulePath
+      # console.log(pkg)
+      # pkg.activate()
+      # console.log(atom.views.getView(atom.workspace))
+      # atom.commands.dispatch(atom.views.getView(atom.workspace), 'merge-conflicts:detect')
+      # console.log(atom.packages.getActivePackage('merge-conflicts'))
+
+      # pkg.onDidCompleteConflictResolution ()->
+      #   console.log('onDidCompleteConflictResolution')
+      #   return
+      # console.log(atom.packages.getActivePackage('merge-conflicts'))  
+        # git.gitCmd args: ['rebase', '--continue']
+        # .then () =>
+        #   @generator.deployGhpages()
+
+      # subs = new CompositeDisposable
+      # subs.add pkg.onDidCompleteConflictResolution (event) =>
+      #   console.log('onDidCompleteConflictResolution')
+      #   # git.gitCmd args: ['rebase', '--continue']
+      #   # .then () =>
+      #   #   @generator.deployGhpages()
+      # subs.dispose()  
 
 #      httpServer.runChildProcess
 #        root: atom.config.get('docapp.outPath')
