@@ -3,9 +3,12 @@ generatorFactory = require './generators/generator'
 path = require 'path'
 fs = require 'fs'
 
-
-projectPath = path.resolve(atom.config.resourcePath, '../../project')
-
+# projectPath
+if process.platform == 'darwin'
+  resolvePath = '../../../project'
+else
+  resolvePath = '../../project'
+projectPath = path.resolve(atom.config.resourcePath, resolvePath)
 if fs.lstatSync(projectPath).isSymbolicLink()
   projectPath = fs.readlinkSync(projectPath)
   if process.platform == 'win32'
@@ -112,7 +115,7 @@ module.exports =
       # pkg.onDidCompleteConflictResolution ()->
       #   console.log('onDidCompleteConflictResolution')
       #   return
-      # console.log(atom.packages.getActivePackage('merge-conflicts'))  
+      # console.log(atom.packages.getActivePackage('merge-conflicts'))
         # git.gitCmd args: ['rebase', '--continue']
         # .then () =>
         #   @generator.deployGhpages()
@@ -123,7 +126,7 @@ module.exports =
       #   # git.gitCmd args: ['rebase', '--continue']
       #   # .then () =>
       #   #   @generator.deployGhpages()
-      # subs.dispose()  
+      # subs.dispose()
 
 #      httpServer.runChildProcess
 #        root: atom.config.get('docapp.outPath')
