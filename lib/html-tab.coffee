@@ -26,9 +26,10 @@ class HtmlTab
 module.exports =
   toggle: (url)->
     if not atom.htmlTab?
-      atom.workspace.activePane.splitRight {copyActiveItem: false} if atom.config.get('docapp.previewSplitRight')
-      atom.workspace.activePane.activateItem new HtmlTab("preview", url)
+      # console.log atom.workspace.getActivePane()
+      if atom.workspace.getActivePane()
+        atom.workspace.getActivePane().splitRight {copyActiveItem: false} if atom.config.get('docapp.previewSplitRight')
+        atom.workspace.getActivePane().activateItem new HtmlTab("preview", url)
     else
       atom.htmlTab.pane.destroyItem(atom.htmlTab)
 #      atom.htmlTab.setUrl(url)
-

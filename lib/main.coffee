@@ -144,6 +144,7 @@ module.exports =
   setMode: (mode)->
     # todo-me refactor setMode -> pathsLength
     pathsLength = atom.project.getPaths().length
+    console.log(pathsLength)
     if pathsLength == 0
       if mode == 'production'
         atom.project.setPaths([atom.config.get 'docapp.srcPath'])
