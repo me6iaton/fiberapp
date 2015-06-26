@@ -1,3 +1,4 @@
+{CompositeDisposable} = require 'atom'
 git = httpServer = null
 generatorFactory = require './generators/generator'
 path = require 'path'
@@ -103,35 +104,19 @@ module.exports =
         'docapp:deploy-ghpages': => @generator.deployGhpages()
         'docapp:preview': => @generator.togglePreview()
 
-      # {CompositeDisposable} = require 'atom'
+      # add git rebase --continue, git push after merge-conflicts detect
+      atom.packages.activatePackage('merge-conflicts').then ()=>
+        pkg = atom.packages.getActivePackage('merge-conflicts')?.mainModule
+        subs = new CompositeDisposable
+        subs.add pkg.onDidCompleteConflictResolution (event)=>
+          git.gitCmd args: ['rebase', '--continue']
+          .then () =>
+            @generator.deployGhpages()
 
-      # pkg = require atom.packages.getLoadedPackage('merge-conflicts').mainModulePath
-      # console.log(pkg)
-      # pkg.activate()
-      # console.log(atom.views.getView(atom.workspace))
-      # atom.commands.dispatch(atom.views.getView(atom.workspace), 'merge-conflicts:detect')
-      # console.log(atom.packages.getActivePackage('merge-conflicts'))
-
-      # pkg.onDidCompleteConflictResolution ()->
-      #   console.log('onDidCompleteConflictResolution')
-      #   return
-      # console.log(atom.packages.getActivePackage('merge-conflicts'))
-        # git.gitCmd args: ['rebase', '--continue']
-        # .then () =>
-        #   @generator.deployGhpages()
-
-      # subs = new CompositeDisposable
-      # subs.add pkg.onDidCompleteConflictResolution (event) =>
-      #   console.log('onDidCompleteConflictResolution')
-      #   # git.gitCmd args: ['rebase', '--continue']
-      #   # .then () =>
-      #   #   @generator.deployGhpages()
-      # subs.dispose()
-
-#      httpServer.runChildProcess
-#        root: atom.config.get('docapp.outPath')
-#        address: atom.config.get('docapp.serverAddress')
-#        port: atom.config.get('docapp.serverPort')
+      # httpServer.runChildProcess
+      #   root: atom.config.get('docapp.outPath')
+      #   address: atom.config.get('docapp.serverAddress')
+      #   port: atom.config.get('docapp.serverPort')
 
       httpServer.run
         root: atom.config.get('docapp.outPath')
@@ -144,7 +129,7 @@ module.exports =
   setMode: (mode)->
     # todo-me refactor setMode -> pathsLength
     pathsLength = atom.project.getPaths().length
-    console.log(pathsLength)
+    # console.log(pathsLength)
     if pathsLength == 0
       if mode == 'production'
         atom.project.setPaths([atom.config.get 'docapp.srcPath'])
