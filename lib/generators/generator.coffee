@@ -7,18 +7,20 @@ watch = require './watch'
 GeneratorFactory = (name) ->
   Generator = require('./' + name )
   class GeneratorDecorator extends Generator
-    @run: ()->
+    @run: (callback) ->
       atom.nprogress.start()
       super ->
         watch.run GeneratorDecorator
+        callback() if callback
         atom.nprogress.done()
 
-    @reload: ()->
+    @reload: () ->
       atom.nprogress.start()
       super ->
+        htmlTab.reload()
         atom.nprogress.done()
 
-    @kill: ()->
+    @kill: () ->
 
     @togglePreview: ->
       url = "http://#{atom.config.get 'docapp.serverHost'}:#{atom.config.get 'docapp.serverPort'}"
@@ -30,7 +32,7 @@ GeneratorFactory = (name) ->
 
     @deployGhpages: ->
       atom.nprogress.start()
-      git.sync().then ()->
+      git.sync().then () ->
         super ->
           console.log("ghpages sucses")
           atom.nprogress.done()

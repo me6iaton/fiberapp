@@ -33,5 +33,11 @@ module.exports =
     else
       htmlTab.pane.destroyItem(htmlTab)
 
-  reload: ()->
-    htmlTab.reload() if htmlTab
+  reload: (timeout) ->
+    if htmlTab
+      if timeout
+        setTimeout () ->
+          htmlTab.reload()
+        , timeout
+      else
+        htmlTab.reload()

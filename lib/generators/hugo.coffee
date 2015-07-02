@@ -11,6 +11,7 @@ class Generator
     outPath: './public'
     theme: 'hyde'
     reloadGlobs: ['config.toml']
+    reloadTimeout: 400
 
   @run: (callback) ->
     projectPath = atom.config.get 'docapp.projectPath'
@@ -30,12 +31,15 @@ class Generator
     hugoProcess = new BufferedProcess
       command: command
       args: args
-      stdout: (output) ->
+      stdout: (output) =>
+        if output.indexOf('Watching for changes') isnt -1
+            callback()
         if output.indexOf('Change detected') isnt -1
-          setTimeout ()->
+          atom.nprogress.start()
+          setTimeout () =>
             htmlTab.reload()
-          , 300
-          # atom.nprogress.done()
+            atom.nprogress.done()
+          , @config.reloadTimeout
       stderr: (err) ->
         console.error err
       exit: (code) ->
@@ -48,11 +52,11 @@ class Generator
         ms = 500
         ms += new Date().getTime()
         continue  while new Date() < ms
-    callback()
 
-  @reload: () ->
+  @reload: (callback) ->
     hugoProcess.kill()
-    @run()
+    @run () ->
+      callback()
 
   @deployGhpages: (callback) ->
     callback()
