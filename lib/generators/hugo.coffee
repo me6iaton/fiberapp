@@ -1,5 +1,6 @@
 {BufferedProcess} = require 'atom'
 path = require 'path'
+htmlTab = require '../html-tab'
 
 class Generator
   hugoProcess = null
@@ -30,12 +31,11 @@ class Generator
       command: command
       args: args
       stdout: (output) ->
-        if atom.htmlTab?
-          if output.indexOf('Change detected') isnt -1
-            setTimeout ()->
-              atom.htmlTab.reload()
-            , 300
-            # atom.nprogress.done()
+        if output.indexOf('Change detected') isnt -1
+          setTimeout ()->
+            htmlTab.reload()
+          , 300
+          # atom.nprogress.done()
       stderr: (err) ->
         console.error err
       exit: (code) ->

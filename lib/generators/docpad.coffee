@@ -1,4 +1,5 @@
 {BufferedNodeProcess} = require 'atom'
+htmlTab = require '../html-tab'
 
 projectPath = atom.config.get 'docapp.projectPath'
 configDefaults =
@@ -57,7 +58,7 @@ class Generator
             atom.nprogress.start()
           console.log(opts.options.title, opts.message)
         docpadInstance.on 'generateAfter', (opts) ->
-          atom.htmlTab.reload() if atom.htmlTab?
+          htmlTab.reload()
           atom.nprogress.done()
         docpadInstance.on 'docpadDestroy', (opts) ->
           instance = null

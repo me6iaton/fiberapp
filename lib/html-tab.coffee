@@ -1,10 +1,10 @@
 {Emitter}   = require 'emissary'
 HtmlTabView = require './views/html-tab-view'
+htmlTab = null
 
 class HtmlTab
   Emitter.includeInto @
   constructor: (@tabTitle, @url) ->
-    atom.htmlTab = @
     @pane = atom.workspace.getActivePane()
   setView: (@htmlTabView) ->
   getClass:     -> HtmlTab
@@ -21,15 +21,17 @@ class HtmlTab
     # @htmlTabView.page.setAttribute 'src', @url
     atom.nprogress.done()
   destroy: ->
-    delete atom.htmlTab
+    htmlTab = null
 
 module.exports =
   toggle: (url)->
-    if not atom.htmlTab?
-      # console.log atom.workspace.getActivePane()
+    if not htmlTab
       if atom.workspace.getActivePane()
         atom.workspace.getActivePane().splitRight {copyActiveItem: false} if atom.config.get('docapp.previewSplitRight')
-        atom.workspace.getActivePane().activateItem new HtmlTab("preview", url)
+        htmlTab = new HtmlTab("preview", url)
+        atom.workspace.getActivePane().activateItem htmlTab
     else
-      atom.htmlTab.pane.destroyItem(atom.htmlTab)
-#      atom.htmlTab.setUrl(url)
+      htmlTab.pane.destroyItem(htmlTab)
+
+  reload: ()->
+    htmlTab.reload() if htmlTab
