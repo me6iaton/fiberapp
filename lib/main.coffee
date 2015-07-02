@@ -16,6 +16,7 @@ if fs.lstatSync(projectPath).isSymbolicLink()
     projectPath = atom.config.resourcePath.slice(0, 1).toLowerCase() + projectPath.slice(1)
 
 console.time('fs.existsSync')
+
 for confname in ['config.yaml', 'config.toml', 'docpad.coffee', '_config.yml']
   #todo-me fix load generator ( array configfiles)
   if fs.existsSync path.resolve(projectPath, './' + confname )
@@ -123,7 +124,6 @@ module.exports =
         host: atom.config.get('docapp.serverHost')
         port: atom.config.get('docapp.serverPort')
 
-#      @generator.runChild()
       @generator.run()
 
   setMode: (mode)->

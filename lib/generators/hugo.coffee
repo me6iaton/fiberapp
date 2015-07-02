@@ -3,12 +3,13 @@ path = require 'path'
 
 class Generator
   hugoProcess = null
-
+  
   @config =
     srcPath: ''
     documentsPath: './content'
     outPath: './public'
     theme: 'hyde'
+    reloadGlobs: 'config.toml'
 
   @run: (callback) ->
     projectPath = atom.config.get 'docapp.projectPath'
@@ -48,6 +49,10 @@ class Generator
         ms += new Date().getTime()
         continue  while new Date() < ms
     callback()
+
+  @reload: () ->
+    hugoProcess.kill()
+    @run()
 
   @deployGhpages: (callback) ->
     callback()

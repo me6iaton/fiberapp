@@ -1,12 +1,19 @@
 #$ = require('atom').$  # todo-me  update require $
-path = require('path')
+path = require 'path'
 git = require '../git.coffee'
-htmlTab = require('../html-tab')
+htmlTab = require '../html-tab'
+watch = require './watch'
 
 GeneratorFactory = (name) ->
   Generator = require('./' + name )
   class GeneratorDecorator extends Generator
     @run: ()->
+      atom.nprogress.start()
+      super ->
+        watch.run Generator
+        atom.nprogress.done()
+
+    @reload: ()->
       atom.nprogress.start()
       super ->
         atom.nprogress.done()
