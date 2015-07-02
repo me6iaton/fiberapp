@@ -80,7 +80,6 @@ module.exports =
       type: 'number'
       default: '1313'
 
-
   activate: (state) ->
     @generator = generator
     atom.packages.onDidActivateInitialPackages () =>

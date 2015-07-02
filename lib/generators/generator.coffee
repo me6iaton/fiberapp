@@ -10,7 +10,7 @@ GeneratorFactory = (name) ->
     @run: ()->
       atom.nprogress.start()
       super ->
-        watch.run Generator
+        watch.run GeneratorDecorator
         atom.nprogress.done()
 
     @reload: ()->
