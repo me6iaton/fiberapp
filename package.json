@@ -1,9 +1,9 @@
 {
-  "name": "docapp",
+  "name": "fiberapp",
   "main": "./lib/main",
-  "version": "0.0.0",
-  "description": "A short description of your package",
-  "repository": "https://github.com/atom/docpad",
+  "version": "0.0.1",
+  "description": "",
+  "repository": "https://github.com/me6iaton/fiberapp",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"
